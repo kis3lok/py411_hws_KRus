@@ -26,5 +26,5 @@ print(f'The temperature is {temp} °C\n{tempFahrenheit} °F\nFeels like {feels_l
 notification.notify(
     title = "Weather",
     message = f'The temperature is {temp} °C\n{tempFahrenheit} °F\nFeels like {feels_like} °C\nDescription: {description}',
-    timeout = 10
+    timeout = 5
 )
