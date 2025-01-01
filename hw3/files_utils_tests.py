@@ -59,17 +59,18 @@ append_txt(file_path, "Hewwo world", "Hello world", "Hi world")
 
 file_path = "placeholder.yaml"
 config = {
-    'app_name': 'Мое приложение',
-    'version': '1.0',
-    'admin': 'Василий Уткин',
+    'app_name': 'Weatherthingy',
+    'version': '0.0',
+    'admin': 'CinnamonBun69',
     'settings': {
-        'theme': 'dark',
-        'language': 'ru',
-        'notifications': True
+        'theme': 'system',
+        'language': 'en',
+        'notifications': True,
+        'location': 'Vologda',
+        'temp_unit': 'C/F',
     },
     'users': [
         'admin',
-        'moderator',
         'guest'
     ]
 }
