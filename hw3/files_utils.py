@@ -96,4 +96,68 @@ def append_csv(file_path: str, data, encoding: str = "utf-8-sig", delimiter: str
         writer.writerows(data)
 
 
+# 000000000000000000000000000
+
+def write_txt(file_path: str, *data: str, encoding: str = "utf-8") -> None:
+    """
+    Записывает данные в TXT файл.
+    :param file_path: Путь к файлу.
+    :param data: Данные для записи.
+    :param encoding: Кодировка файла.
+    :return: None
+    """
+    with open(file_path, "w", encoding=encoding) as file:
+        for line in data:
+            file.write(line + "\n")
+
+data = ["Hewwo world", "Hello world", "Hi world"]
+
+def read_txt(file_path: str, encoding: str = "utf-8") -> list[str]:
+    """
+    Читает данные из TXT-файла.
+    :param file_path: Путь к файлу.
+    :param encoding: Кодировка файла.
+    :return: Данные, считанные из файла.
+    """
+    with open(file_path, "r", encoding=encoding) as file:
+        return file.readlines()
+
+def append_txt(file_path: str, *data: str, encoding: str = "utf-8") -> None:
+    """
+    Добавляет данные в TXT файл.
+    :param file_path: Путь к файлу.
+    :param data: Список строк с данными для добавления.
+    :param encoding: Кодировка файла.
+    :return: None
+    """
+    with open(file_path, "a", encoding=encoding) as file:
+        for line in data:
+            file.write(line + "\n")
+
+
+# 000000000000000000000000000
+import yaml
+
+def write_yaml(data: dict, file_path: str, encoding: str = "utf-8") -> None:
+    """
+    Записывает данные в YAML файл.
+    :param data: Данные для записи.
+    :param file_path: Путь к файлу.
+    :param encoding: Кодировка файла.
+    :return: None
+    """
+    with open(file_path, "w", encoding=encoding) as file:
+        yaml.dump(data, file, default_flow_style=False, allow_unicode=True)
+
+
+def read_yaml(file_path: str, encoding: str = "utf-8") -> dict:
+    """
+    Читает данные из YAML-файла.
+    :param file_path: Путь к файлу.
+    :param encoding: Кодировка файла.
+    :return: Данные, считанные из файла.
+    """
+    with open(file_path, "r", encoding=encoding) as file:
+        return yaml.safe_load(file)
+
 
