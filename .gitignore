@@ -3,3 +3,8 @@
 *.spec
 *build/
 *dist/
+.json
+.yaml
+.csv
+spaceholder.txt
+*__pycache__
