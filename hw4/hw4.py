@@ -24,4 +24,31 @@ class TxtFileHandler:
         except Exception as e:
             print(f'An error accured while trying to read the file: {e}')
 
-    
+    def write_file(self, *data: str, encoding: str = "utf-8") -> None:
+            """
+            Записывает переданную строку в файл. Если файл существует, он перезаписывается.
+            :param data: Строка с данными для записи.
+            :param encoding: Кодировка файла.
+            :return: None
+            """
+            try:
+                with open(self.file_path, "w", encoding=encoding) as file:
+                    for line in data:  
+                        file.write(line + "\n")
+            except Exception as e:
+                print(f'An error accured while trying to write to the file: {e}')
+
+
+    def append_file(self, *data: str, encoding: str = "utf-8") -> None:
+        """
+        Добавляет переданную строку в конец файла. Если файл не существует, он будет создан.
+        :param data: Строка с данными для добавления.
+        :param encoding: Кодировка файла.
+        :return: None
+        """
+        try:
+            with open(self.file_path, "a", encoding=encoding) as file:
+                for line in data:
+                    file.write(line + "\n")
+        except Exception as e:
+            print(f'An error accured while trying to append to the file: {e}')
