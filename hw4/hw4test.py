@@ -1,3 +1,7 @@
+"""
+A test of TxtFileHandler class.
+"""
+
 from hw4 import TxtFileHandler
 
 
