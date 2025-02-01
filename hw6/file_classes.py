@@ -69,4 +69,47 @@ class TxtFile(AbstractFile):
             raise e
 
 
+class JsonFile(AbstractFile):
+    """
+    Класс для работы с JSON файлами.
+    """
+    def read(self):
+        """
+        Читает содержимое файла и возвращает его в виде списка словарей.
+        :return: Содержимое файла в виде списка словарей.
+        """
+        try:    
+            with open(self.file_path, "r", encoding="utf-8") as file:
+                return json.load(file)
+        except FileNotFoundError:
+            print("File '{self.file_path}' not found")
+
+
+    def write(self, *data:dict):
+        """
+        Записывает данные в JSON файл.
+        :param data: Список словарей с данными для записи.
+        :return: None
+        """
+        try:
+            with open(self.file_path, "w", encoding="utf-8") as file:
+                json.dump(data, file, ensure_ascii=False, indent=4)
+        
+        except Exception as e:
+            raise e
+
+    def append(self, *data:dict):
+        """
+        Добавляет данные в JSON файл.
+        :param data: Список словарей с данными для добавления.
+        :return: None
+        """
+        try:
+            old_file = self.read()
+            old_file.extend(data)
+            self.write(*old_file)
+
+        except Exception as e:
+            raise e
+
 
