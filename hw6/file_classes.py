@@ -113,3 +113,48 @@ class JsonFile(AbstractFile):
             raise e
 
 
+class CsvFile(AbstractFile):
+    """
+    Класс для работы с CSV файлами.
+    """
+    def read(self):
+        """
+        Читает содержимое файла и возвращает его в виде списка словарей.
+        :return: Содержимое файла в виде списка словарей.
+        """
+        try:    
+            with open(self.file_path, "r", encoding="utf-8-sig") as file:
+                reader = csv.DictReader(file, delimiter=";")
+                return list(reader)
+        except FileNotFoundError:
+            print("File '{self.file_path}' not found")
+
+    def write(self, *data:dict):
+        """
+        Записывает данные в CSV файл.
+        :param data: Список словарей с данными для записи.
+        :return: None
+        """
+        try:
+            with open(self.file_path, "w", encoding="utf-8-sig", newline="") as file:
+                writer = csv.DictWriter(file, fieldnames=data[0].keys())
+                writer.writeheader()
+                writer.writerows(data)
+        
+        except Exception as e:
+            raise e
+
+    def append(self, *data:dict):
+        """
+        Добавляет данные в CSV файл.
+        :param data: Список словарей с данными для добавления.
+        :return: None"""
+        try:
+            with open(self.file_path, "a", encoding="utf-8-sig", newline="") as file:
+                writer = csv.DictWriter(file, fieldnames=data[0].keys())
+                writer.writerows(data)
+        
+        except Exception as e:
+            raise e
+
+
