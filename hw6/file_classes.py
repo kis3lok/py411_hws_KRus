@@ -27,7 +27,46 @@ class AbstractFile(ABC):
         """
         pass
 
+class TxtFile(AbstractFile):
+    """
+    Класс для работы с TXT файлами.
+    """
+    def read(self):
+        """
+        Читает содержимое файла и возвращает его в виде строки.
+        :return: Содержимое файла в виде строки.
+        """
+        try:
+            with open(self.file_path, "r", encoding="utf-8") as file:
+                return file.read()
+        except FileNotFoundError:
+            print("File '{self.file_path}' not found")
 
+    def write(self, *data:str):
+        """
+        Записывает данные в TXT файл.
+        :param data: Список строк с данными для записи.
+        :return: None
+        """
+        try:    
+            with open(self.file_path, "w", encoding="utf-8") as file:
+                for line in data:
+                    file.write(line + "\n")
+        except Exception as e:
+            raise e
+
+    def append(self, *data:str):
+        """
+        Добавляет данные в TXT файл.
+        :param data: Список строк с данными для добавления.
+        :return: None
+        """
+        try:    
+            with open(self.file_path, "a", encoding="utf-8") as file:
+                for line in data:
+                    file.write(line + "\n")
+        except Exception as e:
+            raise e
 
 
 
