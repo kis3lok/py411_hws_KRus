@@ -49,6 +49,41 @@ class JsonFile:
         with open(self.path, "w", encoding="utf-8") as file:
             json.dump(data, file, ensure_ascii=False, indent=4)
     
+class CitiesSerializer:
+    """
+    Класс для сериализации городов
+    """
+    def __init__(self, city_data: list[dict]):
+        """
+        Инициализания класса
+        :param city_data: Список словарей с данными о городах
+        """
+        self.citylist = []
+        self.serialise(city_data)
+
+    def serialise(self, city_data: list[dict]):
+        """
+        Сериализация городов
+        :param city_data: Список словарей с данными о городах
+        :return: None
+        """
+        for city in city_data:
+            self.citylist.append(City(
+                name=city["name"],
+                population=city["population"],
+                subject=city["subject"],
+                district=city["district"],
+                latitude=float(city['coords']['lat']),
+                longitude=float(city['coords']['lon']),
+            )) #**kwargs не получилось использовать
     
+    def get_all_cities(self):
+        """
+        Возвращает список всех городов
+        :return: Список городов
+        """
+        return self.citylist
+    
+
 
 
