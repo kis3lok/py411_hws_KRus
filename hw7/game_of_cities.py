@@ -84,6 +84,76 @@ class CitiesSerializer:
         """
         return self.citylist
     
+class CityGame:
+    """
+    Класс логики игры
+    """
+    def __init__(self, cities_serializer: CitiesSerializer):
+        """
+        Инициализания класса
+        :param cities_serializer: экземпляр CitiesSerializer
+        """
+        self.cities = cities_serializer.get_all_cities()
+        self.cities_list = [city.name for city in self.cities]
+        self.used_cities = []
+        self.ai_variant = ''
+        self.bad_letters = self.find_bad_letters()
+    
+    def find_bad_letters(self) -> set:
+        """
+        Находит плохие буквы
+        :return: Список плохих букв
+        """
+        all_first_letters = {city.name[0].lower() for city in self.cities}
+        all_last_letters = {city.name[-1].lower() for city in self.cities}
+    
+        bad_letters = set()
+        for letter in all_last_letters:
+            if letter not in all_first_letters:
+                bad_letters.add(letter)
+            
+        return bad_letters
+    
+    def start_game(self):
+        """
+        Начинает игру
+        :return: Стартовый город от компьютера
+        """
+        self.ai_variant = choice(list(self.cities_list))
+        self.cities_list.remove(self.ai_variant)
+        self.used_cities.append(self.ai_variant)
+        return self.ai_variant
+
+    def human_turn(self, city:str):
+        """
+        Ход игрока
+        :param city: Строка с названием города
+        :return: True, если город есть в списке, False, если нет
+        """
+        if city not in self.cities_list:
+            return False
+        if self.ai_variant and city[0].lower() != self.ai_variant[-1].lower():
+            return False
+        self.cities_list.remove(city)
+        self.used_cities.append(city)
+        return True
+    
+    def ai_turn(self, human_variant: str):
+        """
+        Ход компьютера
+        :param human_variant: Строка с названием города от игрока
+        :return: Строка с названием города, начинающимся на ту же букву, на которую заканчивается ^
+        """
+        last_letter = human_variant[-1].lower()
+
+        for city in self.cities_list:
+            if city[0].lower() == last_letter and city[-1].lower() not in self.bad_letters:
+                self.ai_variant = city
+                self.cities_list.remove(city)
+                self.used_cities.append(city)
+                return city
+        return None
+
 
 
 
