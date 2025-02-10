@@ -154,6 +154,54 @@ class CityGame:
                 return city
         return None
 
+class GameManager:
+    """
+    Класс для управления игрой
+    """
+    def __init__(self, json_file: JsonFile, cities_serializer: CitiesSerializer, city_game: CityGame):
+        """
+        Инициализания класса
+        :param json_file: экземпляр JsonFile
+        :param cities_serializer: экземпляр CitiesSerializer
+        :param city_game: экземпляр CityGame
+        """
+        self.json_file = json_file
+        self.cities_serializer = cities_serializer
+        self.city_game = city_game
+    
+    def call(self):
+        """
+        Запускает игру
+        :return: None
+        """
+        self.run_game()
+
+    def run_game(self):
+        """
+        Цикл игры
+        :return: None
+        """
+        print('The game begins!')
+        print(f'AI says {self.city_game.start_game()}')
+        
+        while True:
+            human_variant = input('Your turn: ')
+            if not self.city_game.human_turn(human_variant):
+                print('You lose!')
+                break
+            ai_variant = self.city_game.ai_turn(human_variant)
+            if not ai_variant:
+                print('You win!')
+                break
+            print(f'AI says {ai_variant}')
+
+
+if __name__ == "__main__":
+    json_file = JsonFile("cities.json")
+    cities_serializer = CitiesSerializer(json_file.read_data())
+    city_game = CityGame(cities_serializer)
+    game_manager = GameManager(json_file, cities_serializer, city_game)
+    game_manager.call()    
 
 
 
