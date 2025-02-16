@@ -46,3 +46,20 @@ print(films_starting_with_ch)
 new_full_list = list(filter(lambda film: isinstance(film['year'], int) and film['year'] < 2017, full_list))
 
 print(new_full_list)
+
+
+# 6(8)
+# Только фильмы, вышедшие раньше 2010 года и относящиеся к первой фазе.
+new_full_list1 = list(filter(lambda film: film['stage']=='Первая фаза' and isinstance(film['year'], int) and film['year'] < 2010, full_list))
+
+print(new_full_list1)
+
+# 7(10,11)
+from pprint import pprint
+
+
+full_list_sorted = sorted(filter(lambda film: film['title'] and 'Тор' in film['title'], full_list), key=lambda film: film["title"] if film["title"] else "")
+
+pprint(full_list_sorted, sort_dicts=False)
+print('\n full_list отсортирован по алфавиту(названия) и отфильтрован на предмет наличия слова "Тор" в названии\n')
+
