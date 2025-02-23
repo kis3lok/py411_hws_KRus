@@ -85,3 +85,34 @@ def username_validator(func: Callable) -> Callable:
     return wrapper
     
 
+@username_validator
+@password_validator(length= 8, nums = 1, uppercase = 1, lowercase = 1, special_chars = 1)
+def register_user(username:str, passw: str) -> None:
+    """
+    Функция регистрации пользователя и записи его данных d csv файл
+    :param username: имя пользователя
+    :param passw: пароль пользователя
+    :return: None
+    """
+    with open('users.csv', 'w') as f:
+        writer = csv.writer(f, delimiter=';')
+        writer.writerow([username, passw])
+        print('User successfully registered!')
+
+# успешная регистрация
+try:
+    register_user('Vasya', 'Aa1!aaaa')
+except ValueError as e:
+    print(e)
+
+# неуспешная регистрация из-за пробела в юзернейме
+try:
+    register_user('Vasya Vasya', 'Aa1!aaaa')
+except ValueError as e:
+    print(e)
+
+# неуспешная регистрация из-за невалидного пароля
+try:
+    register_user('Vasya', 'aaaA!a')
+except ValueError as e:
+    print(e)
