@@ -70,3 +70,18 @@ def password_validator(length: int = 8, nums: int = 1, uppercase: int = 1, lower
         return wrapper
     return decorator
     
+def username_validator(func: Callable) -> Callable:
+    """
+    Декоратор для проверки имени пользователя на наличие пробелов
+    :param func: функция, которую декорируем
+    :return: функция
+    """
+    def wrapper(username: str, passw: str):
+        if ' ' in username:
+            raise ValueError('The username is not valid, please exclude spaces from it.')
+        else:
+            return func(username, passw)
+        
+    return wrapper
+    
+
