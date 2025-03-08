@@ -76,3 +76,70 @@ class CitiesIterator:
         self.sort_param = parameter
         self.reverse_sort = reverse
     
+
+    def _prepare_cities(self) -> List[City]:
+        """
+        Метод для подготовки списка городов, его фильтрации
+
+        :return: Список городов
+        """
+        city_objects = []
+        for city in self.cities:
+            city_obj = City(
+                name=city["name"],
+                population=city["population"],
+                subject=city["subject"],
+                district=city["district"],
+                latitude=float(city['coords']['lat']),
+                longitude=float(city['coords']['lon'])
+            )
+            
+            if city_obj.population >= self.min_population:
+                city_objects.append(city_obj)
+            
+        if self.sort_param == 'name':
+            city_objects.sort(key=self._sort_by_name, reverse=self.reverse_sort)
+        elif self.sort_param == 'population':
+            city_objects.sort(key=self._sort_by_population, reverse=self.reverse_sort)
+        elif self.sort_param == 'subject':
+            city_objects.sort(key=self._sort_by_subject, reverse=self.reverse_sort)
+        elif self.sort_param == 'district':
+            city_objects.sort(key=self._sort_by_district, reverse=self.reverse_sort)
+        
+        return city_objects
+
+    def _sort_by_name(self, city: City) -> str:
+        """
+        Метод для установки сортировки городов по названию
+
+        :param city: экземпляр датакласса City
+        :return: название города
+        """
+        return city.name
+
+    def _sort_by_population(self, city: City) -> int:
+        """
+        Метод для установки сортировки городов по населению
+
+        :param city: экземпляр датакласса City
+        :return: население города
+        """
+        return city.population
+
+    def _sort_by_subject(self, city: City) -> str:
+        """
+        Метод для установки сортировки городов по региону
+
+        :param city: экземпляр датакласса City
+        :return: регион города
+        """
+        return city.subject
+
+    def _sort_by_district(self, city: City) -> str:
+        """
+        Метод для установки сортировки городов по району(дистрикту?)
+
+        :param city: экземпляр датакласса City
+        :return: район(дистрикт) города
+        """
+        return city.district
