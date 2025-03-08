@@ -171,3 +171,97 @@ class CitiesIterator:
         self._index += 1
         return city
     
+
+test_cities = [
+    {
+        "coords": {
+            "lat": "52.65",
+            "lon": "90.08333"
+        },
+        "district": "Сибирский",
+        "name": "Абаза",
+        "population": 14816,
+        "subject": "Хакасия"
+    },
+    {
+        "coords": {
+            "lat": "53.71667",
+            "lon": "91.41667"
+        },
+        "district": "Сибирский",
+        "name": "Абакан",
+        "population": 187239,
+        "subject": "Хакасия"
+    },
+    {
+        "coords": {
+            "lat": "53.68333",
+            "lon": "53.65"
+        },
+        "district": "Приволжский",
+        "name": "Абдулино",
+        "population": 18420,
+        "subject": "Оренбургская область"
+    },
+    {
+        "coords": {
+            "lat": "44.86667",
+            "lon": "38.16667"
+        },
+        "district": "Южный",
+        "name": "Абинск",
+        "population": 39186,
+        "subject": "Краснодарский край"
+    },
+    {
+        "coords": {
+            "lat": "55.9",
+            "lon": "53.93333"
+        },
+        "district": "Приволжский",
+        "name": "Агидель",
+        "population": 13935,
+        "subject": "Башкортостан"
+    },
+]
+
+if __name__ == "__main__":
+    
+    # Тест итерации
+    print('1st test')
+    iterator = CitiesIterator(test_cities)
+    for city in iterator:
+        print(f"{city.name}: {city.population}")
+    print()
+
+    # Тест фильтра по минимальному населению (15000)
+    print('2nd test')
+    iterator = CitiesIterator(test_cities)
+    iterator.set_population_filter(15000)
+    for city in iterator:
+        print(f"{city.name}: {city.population}")
+    print()
+
+    # Тест сортировки по названию
+    print('3rd test')
+    iterator = CitiesIterator(test_cities)
+    iterator.sort_by('name')
+    for city in iterator:
+        print(f"{city.name}")
+    print()
+
+    # Тест сортировки по населению в обратном порядке
+    print('4th test')
+    iterator = CitiesIterator(test_cities)
+    iterator.sort_by('population', reverse=True)
+    for city in iterator:
+        print(f"{city.name}: {city.population}")
+    print()
+
+    # Валидация
+    print('5th test')
+    try:
+        invalid_city = [{"name": "Invalid City"}]
+        iterator = CitiesIterator(invalid_city)
+    except ValueError as e:
+        print(e)
