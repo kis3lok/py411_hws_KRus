@@ -143,3 +143,31 @@ class CitiesIterator:
         :return: район(дистрикт) города
         """
         return city.district
+
+
+    def __iter__(self):
+        """
+        Метод для создания итератора
+
+        :return: экземпляр класса CitiesIterator
+        """
+        self._city_objects = self._prepare_cities()
+        self._index = 0
+        return self
+    
+    def __next__(self) -> City:
+        """
+        Метод для получения следующего города
+
+        :return: экземпляр датакласса City
+        """
+        if self._city_objects is None:
+            self._city_objects = self._prepare_cities()
+            
+        if self._index >= len(self._city_objects):
+            raise StopIteration
+            
+        city = self._city_objects[self._index]
+        self._index += 1
+        return city
+    
