@@ -112,3 +112,158 @@ class ImageRequest:
         except Exception as e:
             raise Exception(f"Ошибка при обработке изображения: {e}")
         
+class ChatFacade:
+    """
+    Единый интерфейс для пользователя
+    """
+    def __init__(self, api_key:str) -> None:
+        self.api_key = api_key
+        self.text_request = TextRequest(api_key=self.api_key)
+        self.image_request = ImageRequest(api_key=self.api_key)
+        self.models = {"TextRequest": ["mistral-large-latest"], "ImageRequest": ["pixtral-12b-2409"]}
+        self.modes = {"TextRequest": self.text_request, "ImageRequest": self.image_request}
+        self.current_mode = "TextRequest"  
+        self.current_model = "mistral-large-latest"  
+        self.history = []  
+    
+    def select_mode(self, mode:str = None) -> str:
+        """
+        Выбирает режим работы.
+        :param mode: Режим работы
+        :return: Режим работы
+        """
+        if mode is None:
+            mode = input("Выберите режим: TextRequest или ImageRequest: ")
+        
+        if mode not in self.modes:
+            raise Exception("Такого режима не существует.")
+        
+        self.current_mode = mode
+        return mode
+    
+    def select_model(self, mode:str = None) -> str:
+        """
+        Выбирает модель для работы.
+        :param mode: Режим работы
+        :return: Модель
+        """
+        if mode is None:
+            mode = self.current_mode
+            
+        if mode == "TextRequest":
+            model = input(f"Выберите модель из списка: {self.models['TextRequest']}: ")
+            if model not in self.models["TextRequest"]:
+                model = self.models["TextRequest"][0] 
+        elif mode == "ImageRequest":
+            model = input(f"Выберите модель из списка: {self.models['ImageRequest']}: ")
+            if model not in self.models["ImageRequest"]:
+                model = self.models["ImageRequest"][0] 
+        
+        self.current_model = model
+        return model
+    
+    def load_image(self, image_path:str = None) -> str:
+        """
+        Загружает изображение.
+        :param image_path: Путь к изображению
+        :return: Путь к изображению
+        """
+        if image_path is None:
+            image_path = input("Введите путь к изображению: ")
+        return image_path
+    
+    def ask_question(self, question:str, mode:str = None, model:str = None, image_path:str = None) -> str:
+        """
+        Отправляет вопрос к нейронке в выбранном режиме и возвращает ответ.
+        :param question: Вопрос
+        :param mode: Режим работы
+        :param model: Модель для работы
+        :param image_path: Путь к изображению
+        :return: Ответ
+        """
+        
+        if mode:
+            self.select_mode(mode)
+        
+        if model:
+            self.current_model = model
+        elif not self.current_model:
+            self.select_model()
+        
+        try:
+            if self.current_mode == "TextRequest":
+                result = self.text_request.send(
+                    text=question,
+                    model=self.current_model,
+                    history=self.history
+                )
+            elif self.current_mode == "ImageRequest":
+                if not image_path:
+                    image_path = self.load_image()
+                
+                result = self.image_request.send(
+                    text=question,
+                    image_path=image_path,
+                    model=self.current_model,
+                    history=self.history
+                )
+            
+            self.history = result["history"]
+            
+            return result["response"]
+        
+        except Exception as e:
+            print(f"Ошибка при обработке запроса: {str(e)}")
+            return f"Произошла ошибка: {str(e)}"
+    
+    def get_history(self) -> None:
+        """
+        Возвращает историю переписки
+        """
+        
+        print(self.history)
+    
+    def __call__(self):
+        """
+        Интерактивный режим работы с чатом
+        """
+        
+        print('добро пожаловать в чат-ассистент! Для вывода истории напишите "показать историю"')
+        
+        try:
+            self.select_mode()
+           
+            self.select_model()
+            
+            image_path = None
+            if self.current_mode == "ImageRequest":
+                image_path = self.load_image()
+            
+            while True:
+               
+                question = input("\nВаш вопрос (или 'выход' для завершения): ")
+                
+                if question.lower() == 'выход':
+                    break
+                
+                if question.lower() == 'показать историю':
+                    self.get_history()
+                    break
+               
+                response = self.ask_question(
+                    question=question,
+                    image_path=image_path if self.current_mode == "ImageRequest" else None
+                )
+    
+                print(f"\nОтвет: {response}")
+                
+        except KeyboardInterrupt:
+            print("\nРабота программы прервана пользователем.")
+        except Exception as e:
+            print(f"\nПроизошла ошибка: {e}")
+        
+        print("\nДо свидания!")
+
+if __name__ == "__main__":
+    facade = ChatFacade(api)
+    facade()
