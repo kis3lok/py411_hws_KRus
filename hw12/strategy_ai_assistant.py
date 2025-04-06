@@ -301,3 +301,7 @@ class ChatFacade:
         
         print("\nДо свидания!")
 
+
+if __name__ == "__main__":
+    facade = ChatFacade(api)
+    facade()
