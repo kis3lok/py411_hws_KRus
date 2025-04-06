@@ -138,3 +138,166 @@ class ImageRequestStrategy(RequestStrategy):
             raise Exception(f"Ошибка при обработке изображения: {e}")
         
 
+class ChatFacade:
+    """
+    Фасад предоставляет единый интерфейс для пользователя и управляет взаимодействием с RequestStrategy.
+    """
+    def __init__(self, api_key: str) -> None:
+        self.api_key = api_key
+        self.text_strategy = TextRequestStrategy(api_key=self.api_key)
+        self.image_strategy = ImageRequestStrategy(api_key=self.api_key)
+        
+        self.models = {
+            "text": ["mistral-large-latest"],
+            "image": ["pixtral-12b-2409"]
+        }
+        
+        self.strategies = {
+            "text": self.text_strategy,
+            "image": self.image_strategy
+        }
+        
+        self.current_strategy_type = "text"
+        self.current_strategy = self.text_strategy
+        self.current_model = "mistral-large-latest"
+        
+        self.history = []
+    
+    def change_strategy(self, strategy_type: str) -> None:
+        """
+        Метод для смены текущей стратегии запроса.
+        :param strategy_type: Тип стратегии ('text' или 'image')
+        """
+        if strategy_type not in self.strategies:
+            raise ValueError(f"Неизвестный тип стратегии: {strategy_type}. Доступные типы: {list(self.strategies.keys())}")
+        
+        self.current_strategy_type = strategy_type
+        self.current_strategy = self.strategies[strategy_type]
+        
+        self.current_model = self.models[strategy_type][0]
+    
+    def select_model(self) -> str:
+        """
+        Позволяет выбрать модель из списка, соответствующую текущей стратегии.
+        :return: Выбранная модель
+        """
+        available_models = self.models[self.current_strategy_type]
+        print(f"Доступные модели для стратегии {self.current_strategy_type}: {available_models}")
+        
+        model = input(f"Выберите модель (или нажмите Enter для использования {available_models[0]}): ")
+        
+        if not model or model not in available_models:
+            model = available_models[0]
+            print(f"Выбрана модель по умолчанию: {model}")
+        
+        self.current_model = model
+        return model
+    
+    def ask_question(self, text: str, model: str = None, image_path: str = None) -> dict:
+        """
+        Основной метод для отправки запроса. Делегирует выполнение запроса текущей стратегии.
+        :param text: Текст запроса
+        :param model: Модель для использования 
+        :param image_path: Путь к изображению
+        :return: Словарь с ответом и обновленной историей
+        """
+        if model is None:
+            model = self.current_model
+        
+        if self.current_strategy_type == "image" and image_path is None:
+            image_path = input("Введите путь к изображению: ")
+        
+        try:
+            result = self.current_strategy.execute(
+                text=text,
+                model=model,
+                history=self.history,
+                image_path=image_path
+            )
+            
+            self.history = result["history"]
+            return result
+        
+        except Exception as e:
+            error_message = f"Ошибка при выполнении запроса: {str(e)}"
+            print(error_message)
+            return {"response": error_message, "history": self.history}
+    
+    def get_history(self) -> list:
+        """
+        Возвращает историю запросов и ответов.
+        :return: История сообщений
+        """
+        return self.history
+    
+    def clear_history(self) -> None:
+        """
+        Очищает историю сообщений.
+        """
+        self.history = []
+        print("История сообщений очищена.")
+    
+    def __call__(self):
+        """
+        Интерактивный режим работы с чатом
+        """
+        print('Добро пожаловать в чат с нейронкой')
+        print('Команды: "выход" - завершить работу, "история" - показать историю, "очистить" - очистить историю')
+        print('         "стратегия" - сменить стратегию, "модель" - выбрать модель')
+        
+        try:
+            strategy_type = input("Выберите стратегию (text/image): ").lower()
+            if strategy_type in self.strategies:
+                self.change_strategy(strategy_type)
+            else:
+                print(f"Неизвестная стратегия. Используется стратегия по умолчанию: {self.current_strategy_type}")
+            
+            self.select_model()
+            
+            while True:
+                question = input("\nВаш вопрос: ")
+                
+                if question.lower() == 'выход':
+                    break
+                
+                elif question.lower() == 'история':
+                    print("\nИстория сообщений:")
+                    for msg in self.history:
+                        print(f"{msg['role']}: {msg['content']}")
+                    continue
+                
+                elif question.lower() == 'очистить':
+                    self.clear_history()
+                    continue
+                
+                elif question.lower() == 'стратегия':
+                    strategy_type = input("Выберите стратегию (text/image): ").lower()
+                    if strategy_type in self.strategies:
+                        self.change_strategy(strategy_type)
+                        print(f"Стратегия изменена на: {self.current_strategy_type}")
+                    else:
+                        print(f"Неизвестная стратегия. Используется текущая стратегия: {self.current_strategy_type}")
+                    continue
+                
+                elif question.lower() == 'модель':
+                    self.select_model()
+                    continue
+                
+                image_path = None
+                if self.current_strategy_type == "image":
+                    image_path = input("Введите путь к изображению: ")
+                
+                result = self.ask_question(
+                    text=question,
+                    image_path=image_path
+                )
+                
+                print(f"\nОтвет: {result['response']}")
+                
+        except KeyboardInterrupt:
+            print("\nРабота программы прервана пользователем.")
+        except Exception as e:
+            print(f"\nПроизошла ошибка: {e}")
+        
+        print("\nДо свидания!")
+
